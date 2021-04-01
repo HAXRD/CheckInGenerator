@@ -31,10 +31,10 @@ VALID_RANGE = {
 
 class Worker:
     def __init__(self,
-                 year, month, std_dev=0.1,
+                 year, month, std_dev=0.25,
                  morning=True, afternoon=True, evening=True,
                  enable_occasional_checkin_n_late=True,
-                 p_occasional_checkin_n_late=0.1,
+                 p_occasional_checkin_n_late=0.3,
                  weekend=False,
                  enable_occasional_weekend_checkin=True,
                  p_occasional_weekend_checkin=0.3
@@ -68,31 +68,31 @@ class Worker:
                 worksheet.write_datetime(row, col+1, m_ci.time(), time_format)
 
             worksheet.merge_range(row, col+3, row, col+5, "", merged_format)
-            if m_ci == None:
+            if m_co == None:
                 worksheet.write_blank(row, col+1, None)
             else:
                 worksheet.write_datetime(row, col+3, m_co.time(), time_format)
 
             worksheet.merge_range(row, col+6, row, col+7, "", merged_format)
-            if m_ci == None:
+            if a_ci == None:
                 worksheet.write_blank(row, col+1, None)
             else:
                 worksheet.write_datetime(row, col+6, a_ci.time(), time_format)
 
             worksheet.merge_range(row, col+8, row, col+9, "", merged_format)
-            if m_ci == None:
+            if a_co == None:
                 worksheet.write_blank(row, col+1, None)
             else:
                 worksheet.write_datetime(row, col+8, a_co.time(), time_format)
 
             worksheet.merge_range(row, col+10, row, col+11, "", merged_format)
-            if m_ci == None:
+            if e_ci == None:
                 worksheet.write_blank(row, col+1, None)
             else:
                 worksheet.write_datetime(row, col+10, e_ci.time(), time_format)
 
             worksheet.merge_range(row, col+12, row, col+13, "", merged_format)
-            if m_ci == None:
+            if e_co == None:
                 worksheet.write_blank(row, col+1, None)
             else:
                 worksheet.write_datetime(row, col+12, e_co.time(), time_format)
@@ -142,7 +142,9 @@ class Worker:
                 checkin  = datetime.combine(date.today(), VALID_RANGE[timeslot][0]) + self._get_a_time_delta(timeslot)
                 checkout = datetime.combine(date.today(), VALID_RANGE[timeslot][1]) - self._get_a_time_delta(timeslot)
             if not (checkin == None and checkout == None):
-                return checkin, checkout
+                if checkin < checkout:
+                    return checkin, checkout
+            return checkin, checkout
 
     def _get_a_time_delta(self, timeslot):
         while (True):

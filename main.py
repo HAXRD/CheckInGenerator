@@ -9,5 +9,5 @@ from pprint import pprint
 from worker import Worker
 
 if __name__ == "__main__":
-    worker = Worker(2021, 3, 0.2)
+    worker = Worker(2021, 3)
     worker.write_checkin_xlsx()
