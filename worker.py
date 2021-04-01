@@ -54,15 +54,51 @@ class Worker:
         row, col = 1, 0
         data = self._populate_data(exception_days)
         time_format = workbook.add_format({'num_format': 'hh:mm'})
+        merged_format = workbook.add_format({'align': 'center'})
         for trans in data:
-            worksheet.write_string(row, col, trans[0])
-            for idx, item in enumerate(trans[1:]):
-                if item == None:
-                    worksheet.write_blank(row, col+idx+1, item)
-                else:
-                    print(item)
-                    worksheet.write_datetime(row, col+idx+1, item, time_format)
+            print(trans)
+            d, m_ci, m_co, a_ci, a_co, e_ci, e_co = trans[:]
+            #  2     3,    2,    2,    2,    2
+            worksheet.write_string(row, col, d)
+
+            worksheet.merge_range(row, col+1, row, col+2, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+1, m_ci.time(), time_format)
+
+            worksheet.merge_range(row, col+3, row, col+5, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+3, m_co.time(), time_format)
+
+            worksheet.merge_range(row, col+6, row, col+7, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+6, a_ci.time(), time_format)
+
+            worksheet.merge_range(row, col+8, row, col+9, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+8, a_co.time(), time_format)
+
+            worksheet.merge_range(row, col+10, row, col+11, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+10, e_ci.time(), time_format)
+
+            worksheet.merge_range(row, col+12, row, col+13, "", merged_format)
+            if m_ci == None:
+                worksheet.write_blank(row, col+1, None)
+            else:
+                worksheet.write_datetime(row, col+12, e_co.time(), time_format)
+
             row += 1
+
         workbook.close()
 
 
@@ -93,6 +129,9 @@ class Worker:
                     checkin, checkout = self._populate_a_session("evening", self.evening, self.p_occasional_checkin_n_late)
                     row.append(checkin)
                     row.append(checkout)
+            else:
+                for _ in range(6):
+                    row.append(None)
             data.append(row)
         return data
 
